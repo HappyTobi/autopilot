@@ -10,6 +10,7 @@ import (
 	"code.cloudfoundry.org/cli/api/plugin/pluginerror"
 	"code.cloudfoundry.org/cli/api/uaa"
 	"code.cloudfoundry.org/cli/util/clissh/ssherror"
+	"code.cloudfoundry.org/cli/util/download"
 	"code.cloudfoundry.org/cli/util/manifest"
 	log "github.com/sirupsen/logrus"
 )
@@ -29,14 +30,24 @@ func ConvertToTranslatableError(err error) error {
 		return AppNotFoundInManifestError(e)
 	case actionerror.AssignDropletError:
 		return AssignDropletError(e)
+	case actionerror.BuildpackNotFoundError:
+		return BuildpackNotFoundError(e)
+	case actionerror.BuildpackStackChangeError:
+		return BuildpackStackChangeError(e)
 	case actionerror.CommandLineOptionsWithMultipleAppsError:
 		return CommandLineArgsWithMultipleAppsError{}
 	case actionerror.DockerPasswordNotSetError:
 		return DockerPasswordNotSetError{}
 	case actionerror.DomainNotFoundError:
 		return DomainNotFoundError(e)
+	case manifest.EmptyBuildpacksError:
+		return EmptyBuildpacksError(e)
+	case actionerror.EmptyArchiveError:
+		return EmptyArchiveError(e)
 	case actionerror.EmptyDirectoryError:
 		return EmptyDirectoryError(e)
+	case actionerror.EmptyBuildpackDirectoryError:
+		return EmptyBuildpackDirectoryError(e)
 	case actionerror.FileChangedError:
 		return FileChangedError(e)
 	case actionerror.GettingPluginRepositoryError:
@@ -45,6 +56,8 @@ func ConvertToTranslatableError(err error) error {
 		return HostnameWithTCPDomainError(e)
 	case actionerror.HTTPHealthCheckInvalidError:
 		return HTTPHealthCheckInvalidError{}
+	case actionerror.InvalidBuildpacksError:
+		return InvalidBuildpacksError{}
 	case actionerror.InvalidHTTPRouteSettings:
 		return PortNotAllowedWithHTTPDomainError(e)
 	case actionerror.InvalidRouteError:
@@ -55,6 +68,8 @@ func ConvertToTranslatableError(err error) error {
 		return IsolationSegmentNotFoundError(e)
 	case actionerror.MissingNameError:
 		return RequiredNameForPushError{}
+	case actionerror.MultipleBuildpacksFoundError:
+		return MultipleBuildpacksFoundError(e)
 	case actionerror.NoCompatibleBinaryError:
 		return NoCompatibleBinaryError{}
 	case actionerror.NoDomainsFoundError:
@@ -73,6 +88,10 @@ func ConvertToTranslatableError(err error) error {
 		return NotLoggedInError(e)
 	case actionerror.OrganizationNotFoundError:
 		return OrganizationNotFoundError(e)
+	case actionerror.OrganizationQuotaNotFoundForNameError:
+		return OrganizationQuotaNotFoundForNameError(e)
+	case actionerror.PasswordGrantTypeLogoutRequiredError:
+		return PasswordGrantTypeLogoutRequiredError(e)
 	case actionerror.PluginCommandsConflictError:
 		return PluginCommandsConflictError(e)
 	case actionerror.PluginInvalidError:
@@ -95,16 +114,27 @@ func ConvertToTranslatableError(err error) error {
 		return RouteInDifferentSpaceError(e)
 	case actionerror.RoutePathWithTCPDomainError:
 		return RoutePathWithTCPDomainError(e)
+	case actionerror.RouterGroupNotFoundError:
+		return RouterGroupNotFoundError(e)
 	case actionerror.SecurityGroupNotFoundError:
 		return SecurityGroupNotFoundError(e)
 	case actionerror.ServiceInstanceNotFoundError:
 		return ServiceInstanceNotFoundError(e)
+	case actionerror.ServiceInstanceNotShareableError:
+		return ServiceInstanceNotShareableError{
+			FeatureFlagEnabled:          e.FeatureFlagEnabled,
+			ServiceBrokerSharingEnabled: e.ServiceBrokerSharingEnabled,
+		}
 	case actionerror.ServiceInstanceNotSharedToSpaceError:
 		return ServiceInstanceNotSharedToSpaceError{ServiceInstanceName: e.ServiceInstanceName}
+	case actionerror.ServicePlanNotFoundError:
+		return ServicePlanNotFoundError(e)
 	case actionerror.SharedServiceInstanceNotFoundError:
 		return SharedServiceInstanceNotFoundError(e)
 	case actionerror.SpaceNotFoundError:
 		return SpaceNotFoundError{Name: e.Name}
+	case actionerror.SpaceQuotaNotFoundByNameError:
+		return SpaceQuotaNotFoundByNameError{Name: e.Name}
 	case actionerror.StackNotFoundError:
 		return StackNotFoundError(e)
 	case actionerror.StagingTimeoutError:
@@ -138,6 +168,8 @@ func ConvertToTranslatableError(err error) error {
 		return JobFailedError(e)
 	case ccerror.JobTimeoutError:
 		return JobTimeoutError{JobGUID: e.JobGUID}
+	case ccerror.MultiError:
+		return MultiError{Messages: e.Details()}
 	case ccerror.UnprocessableEntityError:
 		if strings.Contains(e.Message, "Task must have a droplet. Specify droplet or assign current droplet to app.") {
 			return RunTaskError{Message: "App is not staged."}
@@ -154,6 +186,8 @@ func ConvertToTranslatableError(err error) error {
 		return TriggerLegacyPushError{InheritanceRelated: true}
 	case manifest.GlobalFieldsError:
 		return TriggerLegacyPushError{GlobalRelated: e.Fields}
+	case manifest.InterpolationError:
+		return InterpolationError(e)
 
 	// Plugin Execution Errors
 	case pluginerror.RawHTTPStatusError:
@@ -168,12 +202,16 @@ func ConvertToTranslatableError(err error) error {
 		return SSHUnableToAuthenticateError{}
 
 	// UAA Errors
-	case uaa.BadCredentialsError:
-		return BadCredentialsError{}
+	case uaa.UnauthorizedError:
+		return UnauthorizedError(e)
 	case uaa.InsufficientScopeError:
 		return UnauthorizedToPerformActionError{}
 	case uaa.InvalidAuthTokenError:
 		return InvalidRefreshTokenError{}
+
+	// Other Errors
+	case download.RawHTTPStatusError:
+		return HTTPStatusError{Status: e.Status}
 	}
 
 	return err

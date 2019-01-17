@@ -27,7 +27,7 @@ package API is stable.
 ### Protocol Compliance
 
 The Gorilla WebSocket package passes the server tests in the [Autobahn Test
-Suite](http://autobahn.ws/testsuite) using the application in the [examples/autobahn
+Suite](https://github.com/crossbario/autobahn-testsuite) using the application in the [examples/autobahn
 subdirectory](https://github.com/gorilla/websocket/tree/master/examples/autobahn).
 
 ### Gorilla WebSocket compared with other packages
@@ -51,7 +51,7 @@ subdirectory](https://github.com/gorilla/websocket/tree/master/examples/autobahn
 <tr><td>Write message using io.WriteCloser</td><td><a href="http://godoc.org/github.com/gorilla/websocket#Conn.NextWriter">Yes</a></td><td>No, see note 3</td></tr>
 </table>
 
-Notes: 
+Notes:
 
 1. Large messages are fragmented in [Chrome's new WebSocket implementation](http://www.ietf.org/mail-archive/web/hybi/current/msg10503.html).
 2. The application can get the type of a received data message by implementing

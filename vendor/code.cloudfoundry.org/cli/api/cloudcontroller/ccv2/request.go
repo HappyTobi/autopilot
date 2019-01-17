@@ -1,7 +1,6 @@
 package ccv2
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -14,8 +13,11 @@ type Params map[string]string
 
 // requestOptions contains all the options to create an HTTP request.
 type requestOptions struct {
-	// URIParams are the list URI route parameters
-	URIParams Params
+	// Body is the request body
+	Body io.ReadSeeker
+
+	// Method is the HTTP method of the request.
+	Method string
 
 	// Query is a list of HTTP query parameters
 	Query url.Values
@@ -25,11 +27,9 @@ type requestOptions struct {
 
 	// URI is the URI of the request.
 	URI string
-	// Method is the HTTP method of the request.
-	Method string
 
-	// Body is the request body
-	Body io.ReadSeeker
+	// URIParams are the list URI route parameters
+	URIParams Params
 }
 
 // newHTTPRequest returns a constructed HTTP.Request with some defaults.
@@ -38,9 +38,24 @@ func (client Client) newHTTPRequest(passedRequest requestOptions) (*cloudcontrol
 	var request *http.Request
 	var err error
 	if passedRequest.URI != "" {
+		var (
+			path *url.URL
+			base *url.URL
+		)
+
+		path, err = url.Parse(passedRequest.URI)
+		if err != nil {
+			return nil, err
+		}
+
+		base, err = url.Parse(client.API())
+		if err != nil {
+			return nil, err
+		}
+
 		request, err = http.NewRequest(
 			passedRequest.Method,
-			fmt.Sprintf("%s%s", client.API(), passedRequest.URI),
+			base.ResolveReference(path).String(),
 			passedRequest.Body,
 		)
 	} else {

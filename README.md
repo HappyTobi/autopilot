@@ -4,9 +4,7 @@
 
 ## notice
 
-**This plugin is now archived and will not recieve any further changes. I haven't had
-time to properly maintain it for a long time and I'd rather archive it than have it
-limp on under false pretenses.**
+Switched from go dep to govendor
 
 Thank you for your contributions over the past few years.
     
