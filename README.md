@@ -7,18 +7,18 @@
 Project forked from [contraband](https://github.com/contraband/autopilot).
 I started to maintain the autopilot project to support new version of cloudfoundry.
 
-To give you a better overview of the changes i created CHANGELOG.md to show all changes and added features.
+To give you a better overview of the changes i created [CHANGELOG.md](CHANGELOG.md) show all changes and added features.
 
 Switched from go dep to govendor
 
 ## version
 The newes version is the 0.0.9 and worked and based on cf-cli version 6.42.0
 
-to get more informations about the newest release see the Changelog
+to get more informations about the newest release see the [Changelog](CHANGELOG.md)
 
 [cf-resource]: https://github.com/concourse/cf-resource
 
-## installation
+## cf installation
 
 Download the latest version from the [releases][releases] page and make it executable.
 
@@ -68,3 +68,7 @@ delivery environments.
    now goes to the new application.
 
 [indiana-jones]: https://www.youtube.com/watch?v=0gU35Tgtlmg
+
+
+## local development
+for local development you need to install [govendor](https://github.com/kardianos/govendor)
