@@ -7,7 +7,7 @@ image_resource:
 
 inputs:
   - name: autopilot
-    path: gopath/src/github.com/contraband/autopilot
+    path: gopath/src/github.com/happytobi/autopilot
 
 run:
-  path: gopath/src/github.com/contraband/autopilot/scripts/test.sh
+  path: gopath/src/github.com/happytobi/autopilot/scripts/test.sh
