@@ -7,7 +7,7 @@
 Project forked from [contraband](https://github.com/contraband/autopilot).
 I started to maintain the autopilot project to support new version of cloudfoundry.
 
-To give you a better overview of the changes i created [CHANGELOG.md](CHANGELOG.md) show all changes and added features.
+to give  a better overview i created [changelog](CHANGELOG.md) to show all changes and new features.
 
 Switched from go dep to govendor
 
