@@ -1,3 +1,5 @@
+Copyright 2019-2019 Tobias Schug
+
 Copyright 2014-2015 Alex Suraci & Chris Brown
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use

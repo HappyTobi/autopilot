@@ -4,12 +4,17 @@
 
 ## notice
 
+Project forked from [contraband](https://github.com/contraband/autopilot).
+I started to maintain the autopilot project to support new version of cloudfoundry.
+
+To give you a better overview of the changes i created CHANGELOG.md to show all changes and added features.
+
 Switched from go dep to govendor
 
-Thank you for your contributions over the past few years.
-    
-This plugin is still used in the Concourse [cf-resource][cf-resource] and will be
-merged into that if changes need to be made in the future.
+## version
+The newes version is the 0.0.9 and worked and based on cf-cli version 6.42.0
+
+to get more informations about the newest release see the Changelog
 
 [cf-resource]: https://github.com/concourse/cf-resource
 
