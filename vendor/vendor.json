@@ -1503,6 +1503,62 @@
 			"versionExact": "v1.4.0"
 		},
 		{
+			"checksumSHA1": "NE06bs+YL8x2cIlJm0VqQCv27VE=",
+			"path": "github.com/onsi/ginkgo/ginkgo",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
+			"checksumSHA1": "RX2QA4mqBzsogy4OWOCi9mUfAGU=",
+			"path": "github.com/onsi/ginkgo/ginkgo/convert",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
+			"checksumSHA1": "jvjomLV3JcWQ1qa1ZfmvB4/62YI=",
+			"path": "github.com/onsi/ginkgo/ginkgo/interrupthandler",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
+			"checksumSHA1": "brZ63GMMr79P/RwClxFRBKMtICg=",
+			"path": "github.com/onsi/ginkgo/ginkgo/nodot",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
+			"checksumSHA1": "EqrrsA8UX/IPHo2ZHqWSdIzcx6Y=",
+			"path": "github.com/onsi/ginkgo/ginkgo/testrunner",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
+			"checksumSHA1": "x2Fa0rbgpXQaVc6f10KTRchiF7E=",
+			"path": "github.com/onsi/ginkgo/ginkgo/testsuite",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
+			"checksumSHA1": "yT4efdDV3bfosM49kBvQg3PjcMA=",
+			"path": "github.com/onsi/ginkgo/ginkgo/watch",
+			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
+			"revisionTime": "2017-07-16T19:32:35Z",
+			"version": "v1.4.0",
+			"versionExact": "v1.4.0"
+		},
+		{
 			"checksumSHA1": "T1cZh3UWr4Hnx6fQYp+7KDNvxG4=",
 			"path": "github.com/onsi/ginkgo/internal/codelocation",
 			"revision": "9eda700730cba42af70d53180f9dcce9266bc2bc",
