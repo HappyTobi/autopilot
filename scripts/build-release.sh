@@ -5,13 +5,13 @@ set -e
 SANDBOX=$(mktemp -d)
 
 echo "building linux..."
-CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o $SANDBOX/autopilot-linux github.com/contraband/autopilot
+CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o $SANDBOX/autopilot-linux github.com/happytobi/autopilot
 
 echo "building os x..."
-CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -o $SANDBOX/autopilot-darwin github.com/contraband/autopilot
+CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -o $SANDBOX/autopilot-darwin github.com/happytobi/autopilot
 
 echo "building windows..."
-CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -o $SANDBOX/autopilot.exe github.com/contraband/autopilot
+CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -o $SANDBOX/autopilot.exe github.com/happytobi/autopilot
 
 echo
 
