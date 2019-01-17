@@ -3,11 +3,8 @@
 
 set -e
 
-export GOPATH=$PWD/gopath
-export PATH=$GOPATH/bin:$PATH
+cd $GOPATH/src/github.com/happytobi/autopilot
 
-cd $GOPATH/src/github.com/contraband/autopilot
-
-go install github.com/contraband/autopilot/vendor/github.com/onsi/ginkgo/ginkgo
+govendor install github.com/happytobi/autopilot/vendor/github.com/onsi/ginkgo/ginkgo
 
 ginkgo -r "$@"
