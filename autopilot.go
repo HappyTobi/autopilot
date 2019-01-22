@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,7 +36,7 @@ func venerableAppName(appName string) string {
 	return fmt.Sprintf("%s-venerable", appName)
 }
 
-func getActionsForApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, stackName string, vars []string, varsFiles []string, showLogs bool) []rewind.Action {
+func getActionsForApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, stackName string, timeout int, vars []string, varsFiles []string, showLogs bool) []rewind.Action {
 	venName := venerableAppName(appName)
 	var err error
 	var curApp, venApp *AppEntity
@@ -97,7 +98,7 @@ func getActionsForApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, 
 		// push
 		{
 			Forward: func() error {
-				return appRepo.PushApplication(appName, manifestPath, appPath, stackName, vars, varsFiles, showLogs)
+				return appRepo.PushApplication(appName, manifestPath, appPath, stackName, timeout, vars, varsFiles, showLogs)
 			},
 			ReversePrevious: func() error {
 				if !haveVenToCleanup {
@@ -123,7 +124,7 @@ func getActionsForApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, 
 	}
 }
 
-func getActionsForNewApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, stackName string, vars []string, varsFiles []string, showLogs bool) []rewind.Action {
+/*func getActionsForNewApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, stackName string, vars []string, varsFiles []string, showLogs bool) []rewind.Action {
 	return []rewind.Action{
 		// push
 		{
@@ -132,7 +133,7 @@ func getActionsForNewApp(appRepo *ApplicationRepo, appName, manifestPath, appPat
 			},
 		},
 	}
-}
+}*/
 
 func (plugin AutopilotPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	// only handle if actually invoked, else it can't be uninstalled cleanly
@@ -141,11 +142,11 @@ func (plugin AutopilotPlugin) Run(cliConnection plugin.CliConnection, args []str
 	}
 
 	appRepo := NewApplicationRepo(cliConnection)
-	appName, manifestPath, appPath, stackName, vars, varsFiles, showLogs, err := ParseArgs(args)
+	appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(args)
 	fatalIf(err)
 
 	fatalIf((&rewind.Actions{
-		Actions:              getActionsForApp(appRepo, appName, manifestPath, appPath, stackName, vars, varsFiles, showLogs),
+		Actions:              getActionsForApp(appRepo, appName, manifestPath, appPath, stackName, timeout, vars, varsFiles, showLogs),
 		RewindFailureMessage: "Oh no. Something's gone wrong. I've tried to roll back but you should check to see if everything is OK.",
 	}).Execute())
 
@@ -162,7 +163,7 @@ func (AutopilotPlugin) GetMetadata() plugin.PluginMetadata {
 		Version: plugin.VersionType{
 			Major: 0,
 			Minor: 0,
-			Build: 9,
+			Build: 10,
 		},
 		Commands: []plugin.Command{
 			{
@@ -187,7 +188,7 @@ func (s *StringSlice) Set(value string) error {
 	return nil
 }
 
-func ParseArgs(args []string) (string, string, string, string, []string, []string, bool, error) {
+func ParseArgs(args []string) (string, string, string, int, string, []string, []string, bool, error) {
 	flags := flag.NewFlagSet("zero-downtime-push", flag.ContinueOnError)
 
 	var vars StringSlice
@@ -196,25 +197,26 @@ func ParseArgs(args []string) (string, string, string, string, []string, []strin
 	manifestPath := flags.String("f", "", "path to an application manifest")
 	appPath := flags.String("p", "", "path to application files")
 	stackName := flags.String("s", "", "name of the stack to use")
+	timeout := flags.Int("t", 60, "push timout in secounds defualt 60s")
 	showLogs := flags.Bool("show-app-log", false, "tail and show application log during application start")
 	flags.Var(&vars, "var", "Variable key value pair for variable substitution, (e.g., name=app1); can specify multiple times")
 	flags.Var(&varsFiles, "vars-file", "Path to a variable substitution file for manifest; can specify multiple times")
 
 	if len(args) < 2 || strings.HasPrefix(args[1], "-") {
-		return "", "", "", "", []string{}, []string{}, false, ErrNoArgs
+		return "", "", "", *timeout, "", []string{}, []string{}, false, ErrNoArgs
 	}
 	err := flags.Parse(args[2:])
 	if err != nil {
-		return "", "", "", "", []string{}, []string{}, false, err
+		return "", "", "", *timeout, "", []string{}, []string{}, false, err
 	}
 
 	appName := args[1]
 
 	if *manifestPath == "" {
-		return "", "", "", "", []string{}, []string{}, false, ErrNoManifest
+		return "", "", "", *timeout, "", []string{}, []string{}, false, ErrNoManifest
 	}
 
-	return appName, *manifestPath, *appPath, *stackName, vars, varsFiles, *showLogs, nil
+	return appName, *manifestPath, *appPath, *timeout, *stackName, vars, varsFiles, *showLogs, nil
 }
 
 var (
@@ -237,7 +239,7 @@ func (repo *ApplicationRepo) RenameApplication(oldName, newName string) error {
 	return err
 }
 
-func (repo *ApplicationRepo) PushApplication(appName, manifestPath, appPath, stackName string, vars []string, varsFiles []string, showLogs bool) error {
+func (repo *ApplicationRepo) PushApplication(appName, manifestPath, appPath, stackName string, timeout int, vars []string, varsFiles []string, showLogs bool) error {
 	args := []string{"push", appName, "-f", manifestPath, "--no-start"}
 
 	if appPath != "" {
@@ -247,6 +249,10 @@ func (repo *ApplicationRepo) PushApplication(appName, manifestPath, appPath, sta
 	if stackName != "" {
 		args = append(args, "-s", stackName)
 	}
+
+	/* always append timout */
+	timeoutS := strconv.Itoa(timeout)
+	args = append(args, "-t", timeoutS)
 
 	for _, varPair := range vars {
 		args = append(args, "--var", varPair)
