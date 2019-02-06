@@ -12,7 +12,7 @@ to give  a better overview i created [changelog](CHANGELOG.md) to show all chang
 Switched from go dep to govendor
 
 ## version
-The newes version is the 0.0.9 and worked and based on cf-cli version 6.42.0
+The newes version is the 0.0.10 and worked and based on cf-cli version 6.42.0
 
 to get more informations about the newest release see the [Changelog](CHANGELOG.md)
 
@@ -34,6 +34,7 @@ $ cf install-plugin path/to/downloaded/binary
 $ cf zero-downtime-push application-to-replace \
     -f path/to/new_manifest.yml \
     -p path/to/new/path
+    -t 120
 ```
 
 ## warning

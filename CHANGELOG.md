@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.9] - 2019-01-17
 ### Added
+- Add new argument -t to specify a push timeout
+
+### Changed
+- Changed version to 0.0.10
+
+## [0.0.9] - 2019-01-17
+### Added
 - Changelog.md file to privide a better overview about the releases and changed stuff.
 
 ### Changed
