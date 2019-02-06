@@ -16,6 +16,7 @@ import (
 	"code.cloudfoundry.org/cli/plugin"
 	"github.com/cloudfoundry/noaa/consumer"
 	"github.com/happytobi/autopilot/rewind"
+	"github.com/happytobi/autopilot/manifest"
 )
 
 func fatalIf(err error) {
