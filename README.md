@@ -12,9 +12,11 @@ to give  a better overview i created [changelog](CHANGELOG.md) to show all chang
 Switched from go dep to govendor
 
 ## version
-The newes version is the 0.0.9 and worked and based on cf-cli version 6.42.0
+The newes released version is 0.0.9 and worked and based on cf-cli version 6.42.0
+To see the latest work switch to branch 0.0.10 and check out the [Changelog](CHANGELOG.md)
 
-to get more informations about the newest release see the [Changelog](CHANGELOG.md)
+## changelog
+To get more informations about the newest release see the [Changelog](CHANGELOG.md)
 
 [cf-resource]: https://github.com/concourse/cf-resource
 
