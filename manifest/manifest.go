@@ -35,6 +35,11 @@ type Manifest struct {
 	Manifest []Application `yaml:"applications"`
 }
 
+//
+func ParseManifest(manifestFilePath string) {
+	document, err := loadYmlFile(manifestFilePath)
+}
+
 func loadYmlFile(manifestFilePath string) (manifest Manifest, err error) {
 	fileBytes, err := ioutil.ReadFile(manifestFilePath)
 	if err != nil {
