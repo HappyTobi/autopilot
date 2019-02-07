@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - will look for new features bringing in new versions
 - try to implement pull requests from original repository
 
-## [0.0.9] - 2019-01-17
+## [0.0.10] - UNRELEASED
 ### Added
 - Add new argument -t to specify a push timeout
+- Add new manifest parser to get some informations out of the manifest instead of passing them throug the cmd
 
 ### Changed
 - Changed version to 0.0.10
