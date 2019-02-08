@@ -32,15 +32,23 @@ type Application struct {
 Represents the manifest.
 */
 type Manifest struct {
-	Manifest []Application `yaml:"applications"`
+	ApplicationManifests []Application `yaml:"applications"`
 }
 
-//
-func ParseManifest(manifestFilePath string) {
-	document, err := loadYmlFile(manifestFilePath)
+// ParseManifest parse application manifest files from provided path and return
+// (right now) the app name of the first found application.
+func ParseManifest(manifestFilePath string) (appName string) {
+	document := loadYmlFile(manifestFilePath)
+
+	if len(document.ApplicationManifests) == 0 {
+		fmt.Fprintln(os.Stdout, "could not find any application at manifest")
+		os.Exit(1)
+	}
+
+	return document.ApplicationManifests[0].Name
 }
 
-func loadYmlFile(manifestFilePath string) (manifest Manifest, err error) {
+func loadYmlFile(manifestFilePath string) (manifest Manifest) {
 	fileBytes, err := ioutil.ReadFile(manifestFilePath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error while reading manifest:", err)
@@ -54,5 +62,5 @@ func loadYmlFile(manifestFilePath string) (manifest Manifest, err error) {
 		os.Exit(1)
 	}
 
-	return document, nil
+	return document
 }
