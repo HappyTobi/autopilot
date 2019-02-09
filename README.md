@@ -1,4 +1,9 @@
-# autopilot
+# autopilot  
+
+## build
+
+[![Build Status](https://travis-ci.org/HappyTobi/autopilot.svg?branch=0.0.10)](https://travis-ci.org/HappyTobi/autopilot)
+
 
 *cf plugin for hands-off, zero downtime application deploys*
 
@@ -32,6 +37,13 @@ $ cf install-plugin path/to/downloaded/binary
 
 ```
 $ cf zero-downtime-push application-to-replace \
+    -f path/to/new_manifest.yml \
+    -p path/to/new/path
+    -t 120
+```
+or without application name
+```
+$ cf zero-downtime-push \
     -f path/to/new_manifest.yml \
     -p path/to/new/path
     -t 120
