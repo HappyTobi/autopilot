@@ -16,8 +16,8 @@ import (
 	"code.cloudfoundry.org/cli/cf/api/logs"
 	"code.cloudfoundry.org/cli/plugin"
 	"github.com/cloudfoundry/noaa/consumer"
-	"github.com/happytobi/autopilot/rewind"
 	"github.com/happytobi/autopilot/manifest"
+	"github.com/happytobi/autopilot/rewind"
 )
 
 func fatalIf(err error) {
@@ -125,17 +125,6 @@ func getActionsForApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, 
 	}
 }
 
-/*func getActionsForNewApp(appRepo *ApplicationRepo, appName, manifestPath, appPath, stackName string, vars []string, varsFiles []string, showLogs bool) []rewind.Action {
-	return []rewind.Action{
-		// push
-		{
-			Forward: func() error {
-				return appRepo.PushApplication(appName, manifestPath, appPath, stackName, vars, varsFiles, showLogs)
-			},
-		},
-	}
-}*/
-
 func (plugin AutopilotPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	// only handle if actually invoked, else it can't be uninstalled cleanly
 	if args[0] != "zero-downtime-push" {
@@ -189,6 +178,7 @@ func (s *StringSlice) Set(value string) error {
 	return nil
 }
 
+//ParseArgs parse all cmd arguments
 func ParseArgs(args []string) (string, string, string, int, string, []string, []string, bool, error) {
 	flags := flag.NewFlagSet("zero-downtime-push", flag.ContinueOnError)
 
@@ -203,26 +193,39 @@ func ParseArgs(args []string) (string, string, string, int, string, []string, []
 	flags.Var(&vars, "var", "Variable key value pair for variable substitution, (e.g., name=app1); can specify multiple times")
 	flags.Var(&varsFiles, "vars-file", "Path to a variable substitution file for manifest; can specify multiple times")
 
-	if len(args) < 2 || strings.HasPrefix(args[1], "-") {
-		return "", "", "", *timeout, "", []string{}, []string{}, false, ErrNoArgs
+	//default start index of parameters is 2 because 1 is the appName
+	argumentStartIndex := 2
+	//if first argument is not the appName we have to read the appName out of the manifest
+	noAppNameProvided := strings.Contains(args[1], "-")
+	if noAppNameProvided {
+		argumentStartIndex = 1
 	}
-	err := flags.Parse(args[2:])
+
+	err := flags.Parse(args[argumentStartIndex:])
 	if err != nil {
 		return "", "", "", *timeout, "", []string{}, []string{}, false, err
 	}
 
-	appName := args[1]
-
 	if *manifestPath == "" {
 		return "", "", "", *timeout, "", []string{}, []string{}, false, ErrNoManifest
+	}
+
+	//parse first argument as appName
+	appName := args[1]
+	if noAppNameProvided {
+		manifest, err := manifest.ParseManifest(*manifestPath)
+		if err != nil {
+			return "", "", "", *timeout, "", []string{}, []string{}, false, ErrManifest
+		}
+		appName = manifest.ApplicationManifests[0].Name
 	}
 
 	return appName, *manifestPath, *appPath, *timeout, *stackName, vars, varsFiles, *showLogs, nil
 }
 
 var (
-	ErrNoArgs     = errors.New("app name must be specified")
 	ErrNoManifest = errors.New("a manifest is required to push this application")
+	ErrManifest   = errors.New("could not parse manifest")
 )
 
 type ApplicationRepo struct {

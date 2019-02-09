@@ -20,6 +20,31 @@ func TestAutopilot(t *testing.T) {
 }
 
 var _ = Describe("Flag Parsing", func() {
+	It("parses args without appName", func() {
+		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
+			[]string{
+				"zero-downtime-push",
+				"-f", "./fixtures/manifest.yml",
+				"-p", "app-path",
+				"-s", "stack-name",
+				"-t", "120",
+				"-var", "foo=bar",
+				"-var", "baz=bob",
+				"-vars-file", "vars.yml",
+			},
+		)
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(appName).Should(Equal("myApp"))
+		Expect(manifestPath).To(Equal("./fixtures/manifest.yml"))
+		Expect(appPath).To(Equal("app-path"))
+		Expect(stackName).To(Equal("stack-name"))
+		Expect(vars).To(Equal([]string{"foo=bar", "baz=bob"}))
+		Expect(varsFiles).To(Equal([]string{"vars.yml"}))
+		Expect(showLogs).To(Equal(false))
+		Expect(timeout).To(Equal(120))
+	})
+
 	It("parses a all args without timeout", func() {
 		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
 			[]string{
