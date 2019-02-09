@@ -4,4 +4,4 @@ install: true
 before_script:
   - go get -u github.com/kardianos/govendor
 script:
-  sh ./scripts/test.sh
+  sh github.com/HappyTobi/autopilot/scripts/test.sh
