@@ -1,0 +1,7 @@
+language: go
+go: 1.11.x
+install: true
+before_script:
+  - go get -u github.com/kardianos/govendor
+script:
+  sh ./scripts/test.sh
