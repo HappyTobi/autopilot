@@ -1,7 +1,7 @@
 language: go
 go: 1.11.x
-install: true
-before_script:
-  - go get -u github.com/kardianos/govendor
+install: 
+  - go install github.com/onsi/ginkgo/ginkgo
+  - export PATH=$PATH:$HOME/gopath/bin
 script:
-  bash ./scripts/test.sh
+  $HOME/gopath/bin/ginkgo -r --randomizeAllSpecs --randomizeSuites --race --trace
