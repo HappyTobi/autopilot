@@ -3,7 +3,6 @@ package manifest
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -28,39 +27,34 @@ type Application struct {
 	HealthCheckHTTPEndpoint string                 `yaml:"health-check-http-endpoint,omitempty"`
 }
 
-/*
-Represents the manifest.
-*/
+// Manifest struct represents the application manifest.
 type Manifest struct {
 	ApplicationManifests []Application `yaml:"applications"`
 }
 
 // ParseManifest parse application manifest files from provided path and return
 // (right now) the app name of the first found application.
-func ParseManifest(manifestFilePath string) (appName string) {
-	document := loadYmlFile(manifestFilePath)
+func ParseManifest(manifestFilePath string) (manifest Manifest, err error) {
+	document, err := loadYmlFile(manifestFilePath)
 
-	if len(document.ApplicationManifests) == 0 {
-		fmt.Fprintln(os.Stdout, "could not find any application at manifest")
-		os.Exit(1)
+	if err != nil || document.ApplicationManifests == nil {
+		return document, fmt.Errorf("could not parse file - file not valid")
 	}
 
-	return document.ApplicationManifests[0].Name
+	return document, nil
 }
 
-func loadYmlFile(manifestFilePath string) (manifest Manifest) {
+func loadYmlFile(manifestFilePath string) (manifest Manifest, err error) {
 	fileBytes, err := ioutil.ReadFile(manifestFilePath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "error while reading manifest:", err)
-		os.Exit(1)
+		return Manifest{}, fmt.Errorf("error while reading manifest: %s", manifestFilePath)
 	}
 
 	var document Manifest
 	err = yaml.Unmarshal(fileBytes, &document)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "error while parsing the manifest", err)
-		os.Exit(1)
+		return Manifest{}, fmt.Errorf("error while parsing the manifest %s error: %v", manifestFilePath, err)
 	}
 
-	return document
+	return document, nil
 }
