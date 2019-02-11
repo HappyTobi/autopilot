@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - will look for new features bringing in new versions
 - try to implement pull requests from original repository
+- make --var-files working again
+- add pushing multiapp manifests
+- add option to stop / delete old application
+- add github static page with documentation
 
 ## [0.0.10] - UNRELEASED
 ### Added
@@ -19,9 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed version to 0.0.10
 - Changed ParseArgs method
+- Changed "--var" to set-env internal to support dynamic env-var settings
 
 ### Removed
 - Unused code
+- remove "--vars-file" because it's not working anymore (bring feature back in next release)
 
 ## [0.0.9] - 2019-01-17
 ### Added
