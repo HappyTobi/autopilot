@@ -45,6 +45,22 @@ var _ = Describe("Flag Parsing", func() {
 		Expect(timeout).To(Equal(120))
 	})
 
+	It("parses args without appName and wrong vars format", func() {
+		_, _, _, _, _, _, _, _, err := ParseArgs(
+			[]string{
+				"zero-downtime-push",
+				"-f", "./fixtures/manifest.yml",
+				"-p", "app-path",
+				"-s", "stack-name",
+				"-t", "120",
+				"-var", "foo=bar",
+				"-var", "baz bob",
+				"-vars-file", "vars.yml",
+			},
+		)
+		Expect(err).To(MatchError(ErrWrongVarFormat))
+	})
+
 	It("parses a all args without timeout", func() {
 		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
 			[]string{
@@ -106,6 +122,41 @@ var _ = Describe("Flag Parsing", func() {
 		)
 		Expect(err).To(MatchError(ErrNoManifest))
 	})
+})
+
+var _ = Describe("SetEnvironmentVariables", func() {
+	var (
+		cliConn *pluginfakes.FakeCliConnection
+		repo    *ApplicationRepo
+	)
+
+	BeforeEach(func() {
+		cliConn = &pluginfakes.FakeCliConnection{}
+		repo = NewApplicationRepo(cliConn)
+	})
+
+	Describe("SetEnvironmentVariable", func() {
+		It("set one environement variable", func() {
+			err := repo.SetEnvironmentVariables("myApp", []string{"one=1"})
+			Expect(err).ToNot(HaveOccurred())
+
+			Expect(cliConn.CliCommandCallCount()).To(Equal(1))
+			args := cliConn.CliCommandArgsForCall(0)
+			Expect(args).To(Equal([]string{"set-env", "myApp", "one 1"}))
+		})
+
+		It("set more environement variables", func() {
+			err := repo.SetEnvironmentVariables("myApp", []string{"one=1", "two=2"})
+			Expect(err).ToNot(HaveOccurred())
+
+			Expect(cliConn.CliCommandCallCount()).To(Equal(2))
+			args := cliConn.CliCommandArgsForCall(0)
+			Expect(args).To(Equal([]string{"set-env", "myApp", "one 1"}))
+			args = cliConn.CliCommandArgsForCall(1)
+			Expect(args).To(Equal([]string{"set-env", "myApp", "two 2"}))
+		})
+	})
+
 })
 
 var _ = Describe("ApplicationRepo", func() {
@@ -276,7 +327,7 @@ var _ = Describe("ApplicationRepo", func() {
 			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "", "", 60, []string{"foo=bar", "baz=bob"}, []string{"vars.yml"}, false)
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(cliConn.CliCommandCallCount()).To(Equal(2))
+			Expect(cliConn.CliCommandCallCount()).To(Equal(4))
 			args := cliConn.CliCommandArgsForCall(0)
 			Expect(args).To(Equal([]string{
 				"push",
@@ -284,9 +335,22 @@ var _ = Describe("ApplicationRepo", func() {
 				"-f", "/path/to/a/manifest.yml",
 				"--no-start",
 				"-t", "60",
-				"--var", "foo=bar",
-				"--var", "baz=bob",
+
 				"--vars-file", "vars.yml",
+			}))
+
+			args = cliConn.CliCommandArgsForCall(1)
+			Expect(args).To(Equal([]string{
+				"set-env",
+				"appName",
+				"foo bar",
+			}))
+
+			args = cliConn.CliCommandArgsForCall(2)
+			Expect(args).To(Equal([]string{
+				"set-env",
+				"appName",
+				"baz bob",
 			}))
 		})
 

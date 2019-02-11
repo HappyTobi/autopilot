@@ -220,12 +220,23 @@ func ParseArgs(args []string) (string, string, string, int, string, []string, []
 		appName = manifest.ApplicationManifests[0].Name
 	}
 
+	//validate var format
+	if len(vars) > 0 {
+		fmt.Println("check vars")
+		for _, varPair := range vars {
+			if strings.Contains(varPair, "=") == false {
+				return "", "", "", *timeout, "", []string{}, []string{}, false, ErrWrongVarFormat
+			}
+		}
+	}
+
 	return appName, *manifestPath, *appPath, *timeout, *stackName, vars, varsFiles, *showLogs, nil
 }
 
 var (
-	ErrNoManifest = errors.New("a manifest is required to push this application")
-	ErrManifest   = errors.New("could not parse manifest")
+	ErrNoManifest     = errors.New("a manifest is required to push this application")
+	ErrManifest       = errors.New("could not parse manifest")
+	ErrWrongVarFormat = errors.New("--var would be in wrong format, use the vars like key=value")
 )
 
 type ApplicationRepo struct {
@@ -258,10 +269,7 @@ func (repo *ApplicationRepo) PushApplication(appName, manifestPath, appPath, sta
 	timeoutS := strconv.Itoa(timeout)
 	args = append(args, "-t", timeoutS)
 
-	for _, varPair := range vars {
-		args = append(args, "--var", varPair)
-	}
-
+	//TODO to same as vars
 	for _, varsFile := range varsFiles {
 		args = append(args, "--vars-file", varsFile)
 	}
@@ -269,6 +277,11 @@ func (repo *ApplicationRepo) PushApplication(appName, manifestPath, appPath, sta
 	_, err := repo.conn.CliCommand(args...)
 	if err != nil {
 		return err
+	}
+
+	varErr := repo.SetEnvironmentVariables(appName, vars)
+	if varErr != nil {
+		return varErr
 	}
 
 	if showLogs {
@@ -313,6 +326,23 @@ func (repo *ApplicationRepo) PushApplication(appName, manifestPath, appPath, sta
 		return err
 	}
 
+	return nil
+}
+
+//SetEnvironmentVariable set passed vars with set-env to set variables dynamically
+func (repo *ApplicationRepo) SetEnvironmentVariables(appName string, vars []string) error {
+	varArgs := []string{"set-env", appName}
+	//set all variables passed by --var
+	for _, varPair := range vars {
+		tmpArgs := make([]string, len(varArgs))
+		copy(tmpArgs, varArgs)
+		newArgs := strings.Replace(varPair, "=", " ", 1)
+		tmpArgs = append(tmpArgs, newArgs)
+		_, err := repo.conn.CliCommand(tmpArgs...)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
