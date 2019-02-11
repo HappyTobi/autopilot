@@ -1,9 +1,0 @@
-language: go
-go: 1.11.x
-install: 
-  - go get -v github.com/onsi/ginkgo/ginkgo
-  - go get -v github.com/onsi/gomega
-  - export PATH=$PATH:$HOME/gopath/bin
-script:
-  ls -alitr $GOPATH
-  $HOME/gopath/bin/ginkgo -r --randomizeAllSpecs --randomizeSuites --race --trace
