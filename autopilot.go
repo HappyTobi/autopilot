@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -196,7 +197,8 @@ func ParseArgs(args []string) (string, string, string, int, string, []string, []
 	//default start index of parameters is 2 because 1 is the appName
 	argumentStartIndex := 2
 	//if first argument is not the appName we have to read the appName out of the manifest
-	noAppNameProvided := strings.Contains(args[1], "-")
+	noAppNameProvided, _ := regexp.MatchString("^-[a-z]{0,3}", args[1])
+	//noAppNameProvided := strings.Contains(args[1], "-")
 	if noAppNameProvided {
 		argumentStartIndex = 1
 	}
@@ -215,14 +217,13 @@ func ParseArgs(args []string) (string, string, string, int, string, []string, []
 	if noAppNameProvided {
 		manifest, err := manifest.ParseManifest(*manifestPath)
 		if err != nil {
-			return "", "", "", *timeout, "", []string{}, []string{}, false, ErrManifest
+			return "", "", "", *timeout, "", []string{}, []string{}, false, fmt.Errorf("error while parsing manifest %v", err)
 		}
 		appName = manifest.ApplicationManifests[0].Name
 	}
 
 	//validate var format
 	if len(vars) > 0 {
-		fmt.Println("check vars")
 		for _, varPair := range vars {
 			if strings.Contains(varPair, "=") == false {
 				return "", "", "", *timeout, "", []string{}, []string{}, false, ErrWrongVarFormat
@@ -336,8 +337,8 @@ func (repo *ApplicationRepo) SetEnvironmentVariables(appName string, vars []stri
 	for _, varPair := range vars {
 		tmpArgs := make([]string, len(varArgs))
 		copy(tmpArgs, varArgs)
-		newArgs := strings.Replace(varPair, "=", " ", 1)
-		tmpArgs = append(tmpArgs, newArgs)
+		newArgs := strings.Split(varPair, "=")
+		tmpArgs = append(tmpArgs, newArgs...)
 		_, err := repo.conn.CliCommand(tmpArgs...)
 		if err != nil {
 			return err
