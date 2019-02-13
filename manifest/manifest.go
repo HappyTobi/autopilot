@@ -38,7 +38,7 @@ func ParseManifest(manifestFilePath string) (manifest Manifest, err error) {
 	document, err := loadYmlFile(manifestFilePath)
 
 	if err != nil || document.ApplicationManifests == nil {
-		return document, fmt.Errorf("could not parse file - file not valid")
+		return document, fmt.Errorf("could not parse file - %v", err)
 	}
 
 	return document, nil
@@ -47,7 +47,7 @@ func ParseManifest(manifestFilePath string) (manifest Manifest, err error) {
 func loadYmlFile(manifestFilePath string) (manifest Manifest, err error) {
 	fileBytes, err := ioutil.ReadFile(manifestFilePath)
 	if err != nil {
-		return Manifest{}, fmt.Errorf("error while reading manifest: %s", manifestFilePath)
+		return Manifest{}, fmt.Errorf("error while reading manifest: %s - %v", manifestFilePath, err)
 	}
 
 	var document Manifest
