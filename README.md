@@ -1,4 +1,9 @@
-# autopilot
+# autopilot  
+
+## build
+
+[![Build Status](https://travis-ci.org/HappyTobi/autopilot.svg?branch=0.0.10)](https://travis-ci.org/HappyTobi/autopilot)
+
 
 *cf plugin for hands-off, zero downtime application deploys*
 
@@ -12,8 +17,7 @@ to give  a better overview i created [changelog](CHANGELOG.md) to show all chang
 Switched from go dep to govendor
 
 ## version
-The newes released version is 0.0.9 and worked and based on cf-cli version 6.42.0
-To see the latest work switch to branch 0.0.10 and check out the [Changelog](CHANGELOG.md)
+The newes version is the 0.0.10 and worked and based on cf-cli version 6.42.0
 
 ## changelog
 To get more informations about the newest release see the [Changelog](CHANGELOG.md)
@@ -36,6 +40,14 @@ $ cf install-plugin path/to/downloaded/binary
 $ cf zero-downtime-push application-to-replace \
     -f path/to/new_manifest.yml \
     -p path/to/new/path
+    -t 120
+```
+or without application name
+```
+$ cf zero-downtime-push \
+    -f path/to/new_manifest.yml \
+    -p path/to/new/path
+    -t 120
 ```
 
 ## warning
