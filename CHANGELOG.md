@@ -18,16 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new argument -t to specify a push timeout
 - Add new manifest parser to get some informations out of the manifest instead of passing them through the cmd
 - Add new feature to push application without appName if manifest was provided
+- Add new argument "-env" to set-env dynamic
 - Fixtures for test
 
 ### Changed
 - Changed version to 0.0.10
 - Changed ParseArgs method
-- Changed "--var" to set-env internal to support dynamic env-var settings
 
 ### Removed
 - Unused code
-- remove "--vars-file" because it's not working anymore (bring feature back in next release)
 
 ## [0.0.9] - 2019-01-17
 ### Added

@@ -21,7 +21,7 @@ func TestAutopilot(t *testing.T) {
 
 var _ = Describe("Flag Parsing", func() {
 	It("parses args without appName", func() {
-		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
+		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, envs, showLogs, err := ParseArgs(
 			[]string{
 				"zero-downtime-push",
 				"-f", "./fixtures/manifest.yml",
@@ -31,6 +31,8 @@ var _ = Describe("Flag Parsing", func() {
 				"-var", "foo=bar",
 				"-var", "baz=bob",
 				"-vars-file", "vars.yml",
+				"-env", "foo=bar",
+				"-env", "baz=bob",
 			},
 		)
 		Expect(err).ToNot(HaveOccurred())
@@ -40,13 +42,14 @@ var _ = Describe("Flag Parsing", func() {
 		Expect(appPath).To(Equal("app-path"))
 		Expect(stackName).To(Equal("stack-name"))
 		Expect(vars).To(Equal([]string{"foo=bar", "baz=bob"}))
+		Expect(envs).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(varsFiles).To(Equal([]string{"vars.yml"}))
 		Expect(showLogs).To(Equal(false))
 		Expect(timeout).To(Equal(120))
 	})
 
 	It("parses args with appName and dash inside of the appname", func() {
-		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
+		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, envs, showLogs, err := ParseArgs(
 			[]string{
 				"zero-downtime-push",
 				"my-app",
@@ -57,6 +60,8 @@ var _ = Describe("Flag Parsing", func() {
 				"-var", "foo=bar",
 				"-var", "baz=bob",
 				"-vars-file", "vars.yml",
+				"-env", "foo=bar",
+				"-env", "baz=bob",
 			},
 		)
 		Expect(err).ToNot(HaveOccurred())
@@ -67,12 +72,13 @@ var _ = Describe("Flag Parsing", func() {
 		Expect(stackName).To(Equal("stack-name"))
 		Expect(vars).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(varsFiles).To(Equal([]string{"vars.yml"}))
+		Expect(envs).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(showLogs).To(Equal(false))
 		Expect(timeout).To(Equal(120))
 	})
 
-	It("parses args without appName and wrong vars format", func() {
-		_, _, _, _, _, _, _, _, err := ParseArgs(
+	It("parses args without appName and wrong envs format", func() {
+		_, _, _, _, _, _, _, _, _, err := ParseArgs(
 			[]string{
 				"zero-downtime-push",
 				"-f", "./fixtures/manifest.yml",
@@ -82,13 +88,15 @@ var _ = Describe("Flag Parsing", func() {
 				"-var", "foo=bar",
 				"-var", "baz bob",
 				"-vars-file", "vars.yml",
+				"-env", "foo=bar",
+				"-env", "baz bob",
 			},
 		)
 		Expect(err).To(MatchError(ErrWrongVarFormat))
 	})
 
 	It("parses a all args without timeout", func() {
-		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
+		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, envs, showLogs, err := ParseArgs(
 			[]string{
 				"zero-downtime-push",
 				"appname",
@@ -98,6 +106,8 @@ var _ = Describe("Flag Parsing", func() {
 				"-var", "foo=bar",
 				"-var", "baz=bob",
 				"-vars-file", "vars.yml",
+				"-env", "foo=bar",
+				"-env", "baz=bob",
 			},
 		)
 		Expect(err).ToNot(HaveOccurred())
@@ -108,12 +118,13 @@ var _ = Describe("Flag Parsing", func() {
 		Expect(stackName).To(Equal("stack-name"))
 		Expect(vars).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(varsFiles).To(Equal([]string{"vars.yml"}))
+		Expect(envs).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(showLogs).To(Equal(false))
 		Expect(timeout).To(Equal(60))
 	})
 
 	It("parses a complete set of args", func() {
-		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, showLogs, err := ParseArgs(
+		appName, manifestPath, appPath, timeout, stackName, vars, varsFiles, envs, showLogs, err := ParseArgs(
 			[]string{
 				"zero-downtime-push",
 				"appname",
@@ -124,6 +135,8 @@ var _ = Describe("Flag Parsing", func() {
 				"-var", "foo=bar",
 				"-var", "baz=bob",
 				"-vars-file", "vars.yml",
+				"-env", "foo=bar",
+				"-env", "baz=bob",
 			},
 		)
 		Expect(err).ToNot(HaveOccurred())
@@ -134,12 +147,13 @@ var _ = Describe("Flag Parsing", func() {
 		Expect(stackName).To(Equal("stack-name"))
 		Expect(vars).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(varsFiles).To(Equal([]string{"vars.yml"}))
+		Expect(envs).To(Equal([]string{"foo=bar", "baz=bob"}))
 		Expect(showLogs).To(Equal(false))
 		Expect(timeout).To(Equal(120))
 	})
 
 	It("requires a manifest", func() {
-		_, _, _, _, _, _, _, _, err := ParseArgs(
+		_, _, _, _, _, _, _, _, _, err := ParseArgs(
 			[]string{
 				"zero-downtime-push",
 				"appname",
@@ -302,7 +316,7 @@ var _ = Describe("ApplicationRepo", func() {
 
 	Describe("PushApplication", func() {
 		It("pushes an application with both a manifest and a path", func() {
-			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "/path/to/the/app", "", 60, []string{}, []string{}, false)
+			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "/path/to/the/app", "", 60, []string{}, []string{}, []string{}, false)
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(cliConn.CliCommandCallCount()).To(Equal(2))
@@ -318,7 +332,7 @@ var _ = Describe("ApplicationRepo", func() {
 		})
 
 		It("pushes an application with only a manifest", func() {
-			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "", "", 60, []string{}, []string{}, false)
+			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "", "", 60, []string{}, []string{}, []string{}, false)
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(cliConn.CliCommandCallCount()).To(Equal(2))
@@ -333,7 +347,7 @@ var _ = Describe("ApplicationRepo", func() {
 		})
 
 		It("pushes an application with a stack", func() {
-			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "/path/to/the/app", "stackName", 60, []string{}, []string{}, false)
+			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "/path/to/the/app", "stackName", 60, []string{}, []string{}, []string{}, false)
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(cliConn.CliCommandCallCount()).To(Equal(2))
@@ -350,7 +364,7 @@ var _ = Describe("ApplicationRepo", func() {
 		})
 
 		It("pushes an application with variables", func() {
-			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "", "", 60, []string{"foo=bar", "baz=bob"}, []string{"vars.yml"}, false)
+			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "", "", 60, []string{}, []string{"vars.yml"}, []string{"foo=bar", "baz=bob"}, false)
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(cliConn.CliCommandCallCount()).To(Equal(4))
@@ -384,7 +398,7 @@ var _ = Describe("ApplicationRepo", func() {
 		It("returns errors from the push", func() {
 			cliConn.CliCommandReturns([]string{}, errors.New("bad app"))
 
-			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "/path/to/the/app", "", 60, []string{}, []string{}, false)
+			err := repo.PushApplication("appName", "/path/to/a/manifest.yml", "/path/to/the/app", "", 60, []string{}, []string{}, []string{}, false)
 			Expect(err).To(MatchError("bad app"))
 		})
 	})
