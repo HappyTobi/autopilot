@@ -2,9 +2,6 @@
 
 ## build
 
-[![Build Status](https://travis-ci.org/HappyTobi/autopilot.svg?branch=0.0.10)](https://travis-ci.org/HappyTobi/autopilot)
-
-
 *cf plugin for hands-off, zero downtime application deploys*
 
 ## notice
