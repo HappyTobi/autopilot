@@ -1,3 +1,8 @@
+# Important
+
+The fork will be developed under a new name [CF-Puppeteer](https://github.com/HappyTobi/cf-puppeteer) because of the cf-plugin issue [#282](https://github.com/cloudfoundry/cli-plugin-repo/pull/282#issuecomment-463328661)
+
+
 # autopilot  
 
 ## build
